@@ -1,0 +1,916 @@
+{
+  "name": "Email Predictor",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a3e9a037-be1c-4be3-83e0-10e28599f3d1",
+              "name": "firstname",
+              "value": "Manthan",
+              "type": "string"
+            },
+            {
+              "id": "a6cf0d4d-d3db-4eac-8ed6-c65867020873",
+              "name": "lastname",
+              "value": "patel",
+              "type": "string"
+            },
+            {
+              "id": "83c79baf-dd1c-4582-b346-3baaf008d0f1",
+              "name": "companydomain",
+              "value": "acquisitionx.pro",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        -208
+      ],
+      "id": "5d67600c-f521-4ab2-9d80-76f9e80b0946",
+      "name": "Extract Contact Data"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\n// For each input item, convert all string fields to lowercase where appropriate\nfor (const item of $input.all()) {\n  // If the item has a string field at the root level, convert it\n  // Example: { \"email\": \"ABC@EXAMPLE.COM\" } -> \"abc@example.com\"\n  // We will recursively walk the object's keys and lowercase any string values.\n  function lowercaseStrings(obj) {\n    if (obj === null || obj === undefined) return obj;\n\n    if (typeof obj === 'string') {\n      return obj.toLowerCase();\n    }\n\n    if (Array.isArray(obj)) {\n      return obj.map(element => lowercaseStrings(element));\n    }\n\n    if (typeof obj === 'object') {\n      const newObj = {};\n      for (const [key, value] of Object.entries(obj)) {\n        newObj[key] = lowercaseStrings(value);\n      }\n      return newObj;\n    }\n\n    // For other primitive types (number, boolean), return as is\n    return obj;\n  }\n\n  // Apply to the entire JSON payload of the item\n  item.json = lowercaseStrings(item.json);\n}\n\n// Return all processed items\nreturn $input.all();\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -288,
+        64
+      ],
+      "id": "6776889d-3b4e-4fc8-8237-df957d861d53",
+      "name": "Clean & Format Data"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 50 BUSINESS EMAIL VARIATIONS - n8n Code Node\n// Pure email output only - no metadata, just emails\n\nconst firstname = $input.first().json.firstname.toLowerCase().trim();\nconst lastname = $input.first().json.lastname.toLowerCase().trim();\nconst domain = $input.first().json.companydomain.toLowerCase().trim();\n\nconst f = firstname;\nconst l = lastname;\nconst f1 = f.charAt(0);\nconst l1 = l.charAt(0);\nconst f2 = f.substring(0,2);\nconst l2 = l.substring(0,2);\nconst f3 = f.substring(0,3);\nconst l3 = l.substring(0,3);\n\nconst emails = [\n  `${f}.${l}@${domain}`,\n  `${f1}${l}@${domain}`,\n  `${f}${l}@${domain}`,\n  `${f}@${domain}`,\n  `${f1}.${l}@${domain}`,\n  `${f}-${l}@${domain}`,\n  `${l}@${domain}`,\n  `${f1}${l1}@${domain}`,\n  `${f}${l1}@${domain}`,\n  `${l1}${f}@${domain}`,\n  `${f1}_${l}@${domain}`,\n  `${l}.${f1}@${domain}`,\n  `${f3}${l3}@${domain}`,\n  `${f3}.${l}@${domain}`,\n  `${f}.${l3}@${domain}`,\n  `${f2}${l}@${domain}`,\n  `${f}_${l}@${domain}`,\n  `${f1}-${l}@${domain}`,\n  `${l}-${f1}@${domain}`,\n  `${f1}.${l1}@${domain}`,\n  `${l}.${f}@${domain}`,\n  `${l1}.${f}@${domain}`,\n  `${l},${f}@${domain}`,\n  `sales.${f}@${domain}`,\n  `marketing.${f}@${domain}`,\n  `support.${f}@${domain}`,\n  `${f}.sales@${domain}`,\n  `${f1}${l.toUpperCase()}@${domain}`,\n  `${l}${f1.toUpperCase()}@${domain}`,\n  `hey${f}@${domain}`,\n  `hi${f}@${domain}`,\n  `m${f}@${domain}`,\n  `${f}.${l.toUpperCase()}@${domain}`,\n  `${f1.toUpperCase()}${l}@${domain}`,\n  `${f}1@${domain}`,\n  `${f}${f1}@${domain}`,\n  `${f3}${l}@${domain}`,\n  `${f}.${l2}@${domain}`,\n  `${f2}.${l3}@${domain}`,\n  `${l1}${l}${f1}@${domain}`,\n  `${f}.${l1}@${domain}`,\n  `info.${f}@${domain}`,\n  `growth.${f}@${domain}`,\n  `${f}.biz@${domain}`,\n  `${f1}${l}@mail.${domain}`,\n  `${f}.${l}@www.${domain}`,\n  `${l}${f1}@${domain}`,\n  `${f1}${f}${l1}@${domain}`,\n  `ceo.${f}@${domain}`,\n  `${f}team@${domain}`\n].slice(0,50);\n\nreturn emails.map((email, index) => ({\n  json: {\n    email: email,\n    \n  }\n}));\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        64
+      ],
+      "id": "d0c692a9-d975-4ba0-936f-b1e2cd2ae296",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://emailverifier.reoon.com/api/v1/create-bulk-verification-task/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"name\": \"Manthan Demo\",\n    \"emails\": [\"{{ $json.email }}\"],\n    \"key\": \"sHQKMZx53EZ9ljphNiitkpD7K9kT6Gzt\"\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -384,
+        320
+      ],
+      "id": "aa2f2a7e-9992-4433-b094-3f31fd7b7d91",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "=https://emailverifier.reoon.com/api/v1/get-result-bulk-verification-task/?key=sHQKMZx53EZ9ljphNiitkpD7K9kT6Gzt&task_id={{ $json.task_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        64,
+        320
+      ],
+      "id": "8430a971-1fb7-4f59-b544-85547b2c7952",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        320
+      ],
+      "id": "0b10bbc8-60e2-4023-839f-c5a77f033e53",
+      "name": "Wait",
+      "webhookId": "26d9e10a-3703-44f0-8f84-bcf5db2bf79b"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        576
+      ],
+      "id": "6b41e522-d8d7-4753-baeb-08d836bc7f85",
+      "name": "Filter Safe Emails"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "49650893-3f49-4d63-b2c6-f82eca4af949",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        -208
+      ],
+      "id": "3dbbc6be-63c5-4663-9aff-141bc4e9a4ef",
+      "name": "Webhook",
+      "webhookId": "49650893-3f49-4d63-b2c6-f82eca4af949"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -32,
+        576
+      ],
+      "id": "af334c9d-14f9-4cfb-b1e3-35ffaa5d7448",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {
+    "HTTP Request": [
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273175
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273141
+        },
+        "pairedItem": {
+          "item": 1
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273187
+        },
+        "pairedItem": {
+          "item": 2
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273148
+        },
+        "pairedItem": {
+          "item": 3
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273179
+        },
+        "pairedItem": {
+          "item": 4
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273170
+        },
+        "pairedItem": {
+          "item": 5
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273162
+        },
+        "pairedItem": {
+          "item": 6
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273159
+        },
+        "pairedItem": {
+          "item": 7
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273186
+        },
+        "pairedItem": {
+          "item": 8
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273143
+        },
+        "pairedItem": {
+          "item": 9
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273178
+        },
+        "pairedItem": {
+          "item": 10
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273147
+        },
+        "pairedItem": {
+          "item": 11
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273138
+        },
+        "pairedItem": {
+          "item": 12
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273180
+        },
+        "pairedItem": {
+          "item": 13
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273173
+        },
+        "pairedItem": {
+          "item": 14
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273146
+        },
+        "pairedItem": {
+          "item": 15
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273142
+        },
+        "pairedItem": {
+          "item": 16
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273169
+        },
+        "pairedItem": {
+          "item": 17
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273155
+        },
+        "pairedItem": {
+          "item": 18
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273140
+        },
+        "pairedItem": {
+          "item": 19
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273171
+        },
+        "pairedItem": {
+          "item": 20
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273149
+        },
+        "pairedItem": {
+          "item": 21
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273139
+        },
+        "pairedItem": {
+          "item": 22
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273144
+        },
+        "pairedItem": {
+          "item": 23
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273172
+        },
+        "pairedItem": {
+          "item": 24
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273168
+        },
+        "pairedItem": {
+          "item": 25
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273184
+        },
+        "pairedItem": {
+          "item": 26
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273182
+        },
+        "pairedItem": {
+          "item": 27
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273176
+        },
+        "pairedItem": {
+          "item": 28
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273165
+        },
+        "pairedItem": {
+          "item": 29
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273160
+        },
+        "pairedItem": {
+          "item": 30
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273145
+        },
+        "pairedItem": {
+          "item": 31
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273151
+        },
+        "pairedItem": {
+          "item": 32
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273153
+        },
+        "pairedItem": {
+          "item": 33
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273161
+        },
+        "pairedItem": {
+          "item": 34
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273166
+        },
+        "pairedItem": {
+          "item": 35
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273156
+        },
+        "pairedItem": {
+          "item": 36
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273174
+        },
+        "pairedItem": {
+          "item": 37
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273154
+        },
+        "pairedItem": {
+          "item": 38
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273158
+        },
+        "pairedItem": {
+          "item": 39
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273164
+        },
+        "pairedItem": {
+          "item": 40
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273185
+        },
+        "pairedItem": {
+          "item": 41
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273152
+        },
+        "pairedItem": {
+          "item": 42
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273177
+        },
+        "pairedItem": {
+          "item": 43
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273167
+        },
+        "pairedItem": {
+          "item": 44
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273188
+        },
+        "pairedItem": {
+          "item": 45
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273150
+        },
+        "pairedItem": {
+          "item": 46
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273163
+        },
+        "pairedItem": {
+          "item": 47
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273157
+        },
+        "pairedItem": {
+          "item": 48
+        }
+      },
+      {
+        "json": {
+          "count_duplicates_removed": 0,
+          "count_processing": 1,
+          "count_rejected_emails": 0,
+          "count_submitted": 1,
+          "status": "success",
+          "task_id": 4273181
+        },
+        "pairedItem": {
+          "item": 49
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Extract Contact Data": {
+      "main": [
+        [
+          {
+            "node": "Clean & Format Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean & Format Data": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Filter Safe Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Safe Emails": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Contact Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "17c039e3-dc8c-4e59-9010-7cfb1fe5861f",
+  "meta": {
+    "instanceId": "c295b37e6b23f256eaa0cd59ec531a7786a9c09e3b91e33b8fb94ca4f09dd723"
+  },
+  "id": "zHxtJH099EFdI5zu",
+  "tags": []
+}
