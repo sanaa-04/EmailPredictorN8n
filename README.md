@@ -8,7 +8,7 @@ An automated n8n workflow that generates and verifies business email variations 
 
 Given a person's **first name**, **last name**, and **company domain**, this workflow:
 
-1. Generates **50 possible business email variations** (e.g. `john.doe@company.com`, `jdoe@company.com`, etc.)
+1. Generates **'n' possible business email variations** (e.g. `john.doe@company.com`, `jdoe@company.com`, etc.)
 2. Submits each email to the **Reoon bulk email verification API**
 3. Waits for the verification results
 4. Filters for **safe/valid emails**
